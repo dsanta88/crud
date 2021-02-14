@@ -1,14 +1,22 @@
-import { isEmpty } from "lodash";
-import React, { useState } from "react";
-import { size } from "lodash";
-import shortid from "shortid";
+import { isEmpty } from "lodash"
+import React, { useState, useEffect } from "react"
+import { size } from "lodash"
+import shortid from "shortid"
+import { getColletions } from "./actions"
 
 function App() {
-  const [task, setTask] = useState("");
-  const [tasks, setTasks] = useState([]);
-  const [editMode, setEditMode] = useState(false);
-  const [id, setId] = useState("");
-  const [error, setError] = useState(null);
+  const [task, setTask] = useState("")
+  const [tasks, setTasks] = useState([])
+  const [editMode, setEditMode] = useState(false)
+  const [id, setId] = useState("")
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+   (async ()=>{
+     const result= await getColletions("tasks")
+     console.log(result)
+   })()
+  }, [])
 
   const validForm = () => {
     let isValid = true;
@@ -36,19 +44,19 @@ function App() {
     setTasks([...tasks, newTaksk]);
     console.log(tasks);
     setTask("");
-  };
+  }
 
   const deleteTask = (id) => {
     const filteredTasks = tasks.filter((t) => t.id !== id);
     console.log(filteredTasks);
     setTasks(filteredTasks);
-  };
+  }
 
   const editTask = (item) => {
     setTask(item.name);
     setEditMode(true);
     setId(item.id);
-  };
+  }
 
   const saveTask = (e) => {
     e.preventDefault();
@@ -58,12 +66,12 @@ function App() {
 
     const editedTaks = tasks.map((item) =>
       item.id === id ? { id, name: task } : item
-    );
+    )
     setTasks(editedTaks);
     setEditMode(false);
     setTask("");
     setId("");
-  };
+  }
 
   return (
     <div className="container mt-5">
@@ -125,7 +133,7 @@ function App() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default App;
