@@ -2,7 +2,7 @@ import { isEmpty } from "lodash"
 import React, { useState, useEffect } from "react"
 import { size } from "lodash"
 import shortid from "shortid"
-import { getColletions } from "./actions"
+import { addDocument, getColletions } from "./actions"
 
 function App() {
   const [task, setTask] = useState("")
@@ -14,7 +14,11 @@ function App() {
   useEffect(() => {
    (async ()=>{
      const result= await getColletions("tasks")
-     console.log(result)
+     if(result.statusResponse)
+     {
+      setTasks(result.data)
+     }
+ 
    })()
   }, [])
 
@@ -29,20 +33,22 @@ function App() {
     return isValid;
   };
 
-  const addTask = (e) => {
+  const addTask = async (e) => {
     e.preventDefault();
 
     if (!validForm()) {
       return;
     }
 
-    const newTaksk = {
-      id: shortid.generate(),
-      name: task,
-    };
-
-    setTasks([...tasks, newTaksk]);
-    console.log(tasks);
+    const result = await addDocument("tasks", {name: task} )
+    console.log(result)
+    if(!result.statusResponse)
+    {
+     setError(result.error)
+     return
+    }
+    
+    setTasks([...tasks, {id:result.data.id, name:task}]);
     setTask("");
   }
 
